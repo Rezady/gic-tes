@@ -1,5 +1,5 @@
 Teknologi yang digunakan :
-- React
+- Vue
 - Express
 - Mysql
 

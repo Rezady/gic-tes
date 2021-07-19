@@ -30,6 +30,7 @@ app.use((req, res, next) => {
   // mengizinkan headers yang boleh diakses
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   next();
+  
 })
 
 app.use("/", indexRouter);

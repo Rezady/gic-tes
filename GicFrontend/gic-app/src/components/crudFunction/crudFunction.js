@@ -1,22 +1,18 @@
 import axios from 'axios'
 
 // menampilkan value ke tabel
-export function tampilData(fn){
-    axios.get('http://localhost:3000/daftar')
-            .then(function (response) {
-                return response.data
-            })
-            .then((res) => {
-                fn(res.data)
-            })
-            .catch(function (error) {
-                // handle error
-                console.log('err ', error);
-            })
+export async function tampilData(fn){
+    try{
+        const response = await axios.get('http://localhost:3000/daftar')
+        const result = await response.data.data
+        fn(result)
+    }catch(err){
+        console.log(err)
+    }
 }
 
 // call api dan menambahkan rocords ke tabel
-export function tambahData(id,nama, noHp, email){
+export function tambahData(nama, noHp, email){
     axios.post('http://localhost:3000/buat', {
             nama: nama,
             noHp: noHp,
