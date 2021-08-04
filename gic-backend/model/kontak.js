@@ -1,3 +1,5 @@
+// const User = require('./user')
+
 // model table kontak
 module.exports = (sequelize, Sequelize) => {
   
@@ -21,7 +23,11 @@ module.exports = (sequelize, Sequelize) => {
       },
       unique: true,
     },
+    
   });
+
+  // Kontak.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
+
 
   return Kontak;
 };

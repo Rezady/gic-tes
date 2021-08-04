@@ -5,6 +5,9 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const db = require("./model");
 var bodyParser = require("body-parser");
+const Redis = require("ioredis")
+const User = require('./model/user')
+const Kontak = require('./model/kontak')
 
 var indexRouter = require("./routes/index");
 
@@ -37,7 +40,6 @@ app.use("/", indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  console.log('hei')
   next(createError(404));
 });
 
@@ -50,9 +52,12 @@ app.use(function (err, req, res, next) {
   });
 });
 
+db.kontak.belongsTo(db.user, { constraints: true, onDelete: 'CASCADE' });
+db.user.hasMany(db.kontak);
+
 // sinkronisasi perubahan skema database
 db.sequelize.sync();
-db.sequelize.sync({ force: true }).then(() => {
+db.sequelize.sync({ force: false }).then(() => {
   console.log("Drop and re-sync db.");
 });
 
