@@ -1,8 +1,5 @@
-// const User = require('./user')
-
 // model table kontak
-module.exports = (sequelize, Sequelize) => {
-  
+module.exports = (sequelize, Sequelize) => { 
   // mendefinisikan constraint dan type atribut tabel kontak
   const Kontak = sequelize.define("kontak", {
     nama: {
@@ -25,9 +22,6 @@ module.exports = (sequelize, Sequelize) => {
     },
     
   });
-
-  // Kontak.belongsTo(User, { constraints: true, onDelete: 'CASCADE' });
-
 
   return Kontak;
 };

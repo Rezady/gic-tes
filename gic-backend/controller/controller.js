@@ -1,15 +1,14 @@
 const db = require("../model");
 const Kontak = db.kontak;
-const jwt = require('jsonwebtoken')
-
 const config = require('../config/db.config')
 const Redis = require("ioredis");
-const redis = new Redis(config.redis)
+const redis = new Redis(config.redis);
 
-// menampilkan data
+// menampilkan data dengan role admin
 async function showData(req, res, next) {
     
-    // const result = await redis.get("redisKontak")
+    try{
+      // const result = await redis.get("redisKontak")
     // if(result){
     //   console.log("masuk get")
     //   console.log('result ', result)
@@ -19,7 +18,29 @@ async function showData(req, res, next) {
     //     data: result,
     //   })
     // }else{
-      const kontakDb = await Kontak.findAll()
+
+      const {limit, page} = req.query
+
+      var kontakDb;
+      if(req.user.role === 'admin'){
+        if(limit){
+          kontakDb = await Kontak.findAll({
+            limit: parseInt(limit),
+            offset: page ? (parseInt(page) - 1) * parseInt(limit) : 0
+          })
+        }
+        else{
+          kontakDb = await Kontak.findAll()
+        }
+      }
+      else if(req.user.role === 'user'){
+        kontakDb = await Kontak.findAll({
+          where: {
+            userId: req.user.id      
+          }
+        })
+      }
+      
       const dataKontak = kontakDb
       redis.set('redisKontak', {dataKontak:'aaa'})
       res.status(200).json({
@@ -27,17 +48,14 @@ async function showData(req, res, next) {
         message: "data berhasil didapatkan",
         data: dataKontak,
       })
-      console.log('kontakDb', dataKontak)
-      
-    // } 
-
-    // .catch((err) => {
-    //   res.status(500).send({
-    //     success: false,
-    //     message: err.message || "data tidak berhasil didapatkan.",
-    //   });
-    // });
-  
+      // console.log('kontakDb', kontakDb)
+      // } 
+    }catch(err){
+      res.status(500).send({
+        success: false,
+        message: err.message || "data tidak berhasil didapatkan.",
+      });
+    }
 }
 
 // menambah data baru di tabel kontak
@@ -54,11 +72,10 @@ function createData(req, res, next) {
   const kontak = {
     nama: req.body.nama,
     noHp: req.body.noHp,
-    email: req.body.email,
-    // idUser: 
+    email: req.body.email
   };
 
-  Kontak.create(kontak)
+  Kontak.create({...kontak, idUser:"aa"})
     .then((result) => {
       res.status(200).json({
         success: true,
@@ -71,7 +88,7 @@ function createData(req, res, next) {
         success: false,
         message: err.errors[0].message || err.message || "data gagal diinput",
       });
-    });
+    }); 
 }
 
 // update database
@@ -92,6 +109,7 @@ function updateData(req, res, next) {
     noHp: req.body.noHp,
     email: req.body.email,
     idUser: req.body.idUser,
+    role: req.body.role
   };
   Kontak.update(updateKontak, {
     where: {

@@ -11,17 +11,18 @@ function login(req, res, next){
       where:{
         nama: namaReq
       }
-    }).then((result) => {
-      if(result.dataValues.password === passwordReq){
-        console.log('login berhasil')
-        var token = jwt.sign({ user_id:result.id  }, env.jwtSecret, {
-            expiresIn: 86400 // 24 hours
+    }).then((user) => {
+      if(user.dataValues.password === passwordReq){
+        const userData = user.dataValues
+        console.log('login berhasil, ', userData)
+        var token = jwt.sign({ userData }, env.jwtSecret, {
+            expiresIn: 600 // 1 minute
           }); 
-        console.log("token ", token);
+        
         res.status(200).json({
             success: true,
             message: "berhasil login",
-            data: result,
+            data: user,
             token:token,            
         })
       }
@@ -51,20 +52,20 @@ function register(req, res, next){
     noHp: passwordReq,
   };
 
-    User.create(user)
-        .then((result) => {
-        res.status(200).json({
-            success: true,
-            message: "data berhasil diinput",
-        });
-        })
-        .catch((err) => {
-        console.log("err1 ", err.errors[0].message);
-        res.status(500).json({
-            success: false,
-            message: err.errors[0].message || err.message || "data gagal diinput",
-        });
-        });
+  User.create(user)
+      .then((result) => {
+      res.status(200).json({
+          success: true,
+          message: "data berhasil diinput",
+      });
+      })
+      .catch((err) => {
+      console.log("err1 ", err.errors[0].message);
+      res.status(500).json({
+          success: false,
+          message: err.errors[0].message || err.message || "data gagal diinput",
+      });
+      });
 
 }
 

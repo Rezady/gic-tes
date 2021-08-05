@@ -1,5 +1,3 @@
-// const Kontak = require('./kontak')
-
 module.exports = (sequelize, Sequelize) => {
     const User = sequelize.define("user", {
         nama: {
@@ -9,7 +7,16 @@ module.exports = (sequelize, Sequelize) => {
         password: {
             type: Sequelize.STRING,
           },
+        token: {
+            type: Sequelize.STRING,
+        },
+        role:{
+          type: Sequelize.STRING,
+          validate: {
+              isIn: [['user', 'admin']],
+          }
+        }
     })
-    // User.hasMany(Kontak);
+    
     return User
 }

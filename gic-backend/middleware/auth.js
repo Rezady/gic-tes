@@ -13,13 +13,14 @@ const auth = (req, res, next) => {
         })
     } 
 
-    jwt.verify(token, env.jwtSecret, (err, decoded) => {
+    jwt.verify(token, env.jwtSecret, (err, userJwt) => {
         console.log('verify')
-        if (err) {  
+        req.user = userJwt.userData
+        if (err) {
             return res.status(401).send({
             message: "Unauthorized!"
             });
-        }    
+        } 
     });
     next();
 }
