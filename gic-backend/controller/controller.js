@@ -20,8 +20,8 @@ async function showData(req, res, next) {
     // }else{
 
       const {limit, page} = req.query
-
       var kontakDb;
+
       if(req.user.role === 'admin'){
         if(limit){
           kontakDb = await Kontak.findAll({
@@ -34,11 +34,19 @@ async function showData(req, res, next) {
         }
       }
       else if(req.user.role === 'user'){
-        kontakDb = await Kontak.findAll({
-          where: {
-            userId: req.user.id      
-          }
-        })
+        if(limit){
+          kontakDb = await Kontak.findAll({
+            limit: parseInt(limit),
+            offset: page ? (parseInt(page) - 1) * parseInt(limit) : 0
+          })
+        }else{
+          kontakDb = await Kontak.findAll({
+            where: {
+              userId: req.user.id      
+            }
+          })
+        }
+        
       }
       
       const dataKontak = kontakDb
@@ -75,8 +83,9 @@ function createData(req, res, next) {
     email: req.body.email
   };
 
-  Kontak.create({...kontak, idUser:"aa"})
+  Kontak.create(kontak)
     .then((result) => {
+      result.update({...kontak, userId:parseInt(req.user.id)})
       res.status(200).json({
         success: true,
         message: "data berhasil diinput",
