@@ -3,6 +3,7 @@ const Kontak = db.kontak;
 const config = require('../config/db.config')
 const Redis = require("ioredis");
 const redis = new Redis(config.redis);
+const { Op } = require("sequelize");
 
 // menampilkan data dengan role admin
 async function showData(req, res, next) {
@@ -19,34 +20,57 @@ async function showData(req, res, next) {
     //   })
     // }else{
 
-      const {limit, page} = req.query
+      const {limit, page, search} = req.query
       var kontakDb;
 
       if(req.user.role === 'admin'){
-        if(limit){
-          kontakDb = await Kontak.findAll({
-            limit: parseInt(limit),
-            offset: page ? (parseInt(page) - 1) * parseInt(limit) : 0
-          })
-        }
-        else{
+          
           kontakDb = await Kontak.findAll()
-        }
+          if(limit){
+            kontakDb = await Kontak.findAll({
+              limit: parseInt(limit),
+              offset: page ? (parseInt(page) - 1) * parseInt(limit) : 0
+            })
+          }
+          
+          if(search){
+            kontakDb = await Kontak.findAll({
+              where: {
+                [Op.or] : [
+                  {nama: search},
+                  {noHp: search},
+                  {email:search}
+                ]
+              }
+            })
+          }       
+          
       }
       else if(req.user.role === 'user'){
-        if(limit){
-          kontakDb = await Kontak.findAll({
-            limit: parseInt(limit),
-            offset: page ? (parseInt(page) - 1) * parseInt(limit) : 0
-          })
-        }else{
           kontakDb = await Kontak.findAll({
             where: {
               userId: req.user.id      
             }
           })
-        }
-        
+          
+          if(limit){
+            kontakDb = await Kontak.findAll({
+              limit: parseInt(limit),
+              offset: page ? (parseInt(page) - 1) * parseInt(limit) : 0
+            })
+          }
+
+          if(search){
+            kontakDb = await Kontak.findAll({
+              where: {
+                [Op.or] : [
+                  {nama: search},
+                  {noHp: search},
+                  {email:search}
+                ]
+              }
+            })
+          }
       }
       
       const dataKontak = kontakDb
