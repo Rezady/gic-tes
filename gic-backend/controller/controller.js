@@ -9,70 +9,32 @@ const { Op } = require("sequelize");
 async function showData(req, res, next) {
     
     try{
-      // const result = await redis.get("redisKontak")
-    // if(result){
-    //   console.log("masuk get")
-    //   console.log('result ', result)
-    //   res.status(200).json({
-    //     success: true,
-    //     message: "data berhasil didapatkan",
-    //     data: result,
-    //   })
-    // }else{
-
       const {limit, page, search} = req.query
       var kontakDb;
 
-      if(req.user.role === 'admin'){
-          
-          kontakDb = await Kontak.findAll()
-          if(limit){
-            kontakDb = await Kontak.findAll({
-              limit: parseInt(limit),
-              offset: page ? (parseInt(page) - 1) * parseInt(limit) : 0
-            })
+      if(req.user.role === 'admin'){ 
+        // getAll or pagination or search    
+        kontakDb = await Kontak.findAll({
+          limit: limit ? parseInt(limit) : Number.MAX_SAFE_INTEGER + 1,
+          offset: limit && page ? (parseInt(page) - 1) * parseInt(limit) : 0,
+          where: search && {
+            [Op.or] : [
+              {nama: search},
+              {noHp: search},
+              {email: search}
+            ]
           }
-          
-          if(search){
-            kontakDb = await Kontak.findAll({
-              where: {
-                [Op.or] : [
-                  {nama: search},
-                  {noHp: search},
-                  {email:search}
-                ]
-              }
-            })
-          }       
-          
+        })  
+      }else if(req.user.role === 'user'){
+        // getAll or pagination or search    
+        kontakDb = await Kontak.findAll({
+          limit: limit ? parseInt(limit) : Number.MAX_SAFE_INTEGER + 1,
+          offset: limit && page ? (parseInt(page) - 1) * parseInt(limit) : 0,
+          where: {
+            userId: req.user.id      
+          }
+        })
       }
-      else if(req.user.role === 'user'){
-          kontakDb = await Kontak.findAll({
-            where: {
-              userId: req.user.id      
-            }
-          })
-          
-          if(limit){
-            kontakDb = await Kontak.findAll({
-              limit: parseInt(limit),
-              offset: page ? (parseInt(page) - 1) * parseInt(limit) : 0
-            })
-          }
-
-          if(search){
-            kontakDb = await Kontak.findAll({
-              where: {
-                [Op.or] : [
-                  {nama: search},
-                  {noHp: search},
-                  {email:search}
-                ]
-              }
-            })
-          }
-      }
-      
       const dataKontak = kontakDb
       redis.set('redisKontak', {dataKontak:'aaa'})
       res.status(200).json({
@@ -80,8 +42,8 @@ async function showData(req, res, next) {
         message: "data berhasil didapatkan",
         data: dataKontak,
       })
-      // console.log('kontakDb', kontakDb)
-      // } 
+      
+       
     }catch(err){
       res.status(500).send({
         success: false,
