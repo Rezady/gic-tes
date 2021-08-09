@@ -6,8 +6,6 @@ var logger = require("morgan");
 const db = require("./model");
 var bodyParser = require("body-parser");
 const Redis = require("ioredis")
-const User = require('./model/user')
-const Kontak = require('./model/kontak')
 
 var indexRouter = require("./routes/index");
 
