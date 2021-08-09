@@ -3,7 +3,8 @@ const User = db.user;
 const jwt = require('jsonwebtoken')
 const env = require('../config/env.js')
 
-function login(req, res, next){
+class ControllerLogin {
+  static login(req, res, next){
   
     const namaReq = req.body.nama
     const passwordReq = req.body.password
@@ -16,8 +17,8 @@ function login(req, res, next){
         const userData = user.dataValues
         console.log('login berhasil, ', userData)
         var token = jwt.sign({ userData }, env.jwtSecret, {
-            expiresIn: 600 // 1 minute
-          }); 
+            expiresIn: 86400 // 1 day
+        }); 
         
         res.status(200).json({
             success: true,
@@ -31,46 +32,44 @@ function login(req, res, next){
       console.log(err)
     })
   
-}
-
-function register(req, res, next){
-
-    const namaReq = req.body.nama
-    const passwordReq = req.body.password
-
-    // Validasi request
-  if (!namaReq || !passwordReq ) {
-    res.status(400).json({
-      success: false,
-      message: "input tidak boleh ada yang kosong",
-    });
-    return;
   }
 
-  const user = {
-    nama: namaReq,
-    noHp: passwordReq,
-  };
+  static register(req, res, next){
 
-  User.create(user)
-      .then((result) => {
-      res.status(200).json({
-          success: true,
-          message: "data berhasil diinput",
+      const namaReq = req.body.nama
+      const passwordReq = req.body.password
+
+      // Validasi request
+    if (!namaReq || !passwordReq ) {
+      res.status(400).json({
+        success: false,
+        message: "input tidak boleh ada yang kosong",
       });
-      })
-      .catch((err) => {
-      console.log("err1 ", err.errors[0].message);
-      res.status(500).json({
-          success: false,
-          message: err.errors[0].message || err.message || "data gagal diinput",
-      });
-      });
+      return;
+    }
+
+    const user = {
+      nama: namaReq,
+      noHp: passwordReq,
+    };
+
+    User.create(user)
+        .then((result) => {
+        res.status(200).json({
+            success: true,
+            message: "data berhasil diinput",
+        });
+        })
+        .catch((err) => {
+        console.log("err1 ", err.errors[0].message);
+        res.status(500).json({
+            success: false,
+            message: err.errors[0].message || err.message || "data gagal diinput",
+        });
+        });
+
+  }
 
 }
 
-function logout(){
-  
-}
-
-module.exports = { login, register, logout }
+module.exports = ControllerLogin;
