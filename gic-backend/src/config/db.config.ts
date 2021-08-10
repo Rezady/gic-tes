@@ -1,5 +1,7 @@
+import { Configdb } from '../interface/interface'
+
 // konfigurasi koneksi database
-const config = {
+const config:Configdb = {
   HOST: "localhost",
   USER: "root",
   PASSWORD: "",
@@ -7,7 +9,7 @@ const config = {
   dialect: "mysql",
 };
 
-const redisConfig = {
+const redisConfig:Configdb = {
   port: 6379, // Redis port
   host: "127.0.0.1", // Redis host
   family: 4, // 4 (IPv4) or 6 (IPv6)

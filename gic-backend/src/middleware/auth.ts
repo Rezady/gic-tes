@@ -11,10 +11,10 @@ declare global {
   } 
 
 class Auth {
-    static checkToken(req:Request , res:Response, next:NextFunction) {
+    static checkToken(req:Request , res:Response, next:NextFunction):void {
         console.log('auth')
-        let token = req.header('Authorization')?.replace('Bearer ', '')
-        console.log('token ', token)
+        let token = req.header('Authorization')?.replace('Bearer ', '') as string
+        console.log('token ', typeof token)
 
         if(!token){
             res.status(404).json({

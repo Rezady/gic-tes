@@ -5,19 +5,7 @@ const Redis = require("ioredis");
 const redis = new Redis(config.redis);
 const { Op } = require("sequelize");
 import {Request, Response, NextFunction} from 'express'
-
-interface QueryRequest {
-  limit?:string,
-  page?: string,
-  search?: string,
-}
-
-interface ObjectContact{
-  nama: string,
-  noHp: string,
-  email: string,
-  userId?: number,
-}
+import {QueryRequest, ObjectContact} from '../interface/interface'
 
 declare global {
   namespace Express {
@@ -32,7 +20,7 @@ class Controller {
   static async showData(req:Request, res:Response, next:NextFunction) {
     try{
       const {limit, page, search}:QueryRequest = req.query;
-      var kontakDb;
+      var kontakDb:ObjectContact;
 
       // menampilkan data dengan role admin
       if(req.user.role === 'admin'){ 
@@ -58,7 +46,8 @@ class Controller {
           }
         })
       }
-      const dataKontak = kontakDb;
+
+      const dataKontak = kontakDb!;
       redis.set('redisKontak', {dataKontak:'aaa'})
       res.status(200).json({
         success: true,
@@ -67,7 +56,7 @@ class Controller {
       })
       
        
-    }catch(err){
+    }catch(err:any){
       res.status(500).send({
         success: false,
         message: err.message || "data tidak berhasil didapatkan.",
@@ -76,7 +65,7 @@ class Controller {
 }
 
   // menambah data baru di tabel kontak
-  static createData(req:Request, res:Response, next:NextFunction) {
+  static createData(req:Request, res:Response, next:NextFunction):void {
     // Validasi request
     if (!req.body.nama || !req.body.noHp || !req.body.email) {
       res.status(400).json({
@@ -110,7 +99,7 @@ class Controller {
   }
 
   // update database
-  static updateData(req:Request, res:Response, next:NextFunction) {
+  static updateData(req:Request, res:Response, next:NextFunction):void {
     // Validate request
     if (!req.body.nama || !req.body.noHp || !req.body.email || !req.body.idUser) {
       res.status(400).json({
@@ -120,15 +109,16 @@ class Controller {
       return;
     }
 
-    var id = req.body.id;
+    
 
-    const updateKontak = {
+    const updateKontak:ObjectContact = {
       nama: req.body.nama,
       noHp: req.body.noHp,
       email: req.body.email,
-      idUser: req.body.idUser,
+      userId: parseInt(req.user.id),
       role: req.body.role
     };
+    var id = req.body.id;
     Kontak.update(updateKontak, {
       where: {
         id: id,
@@ -149,8 +139,9 @@ class Controller {
   }
 
   // Menghapus data di tabel kontak
-  static deleteData(req:Request, res:Response, next:NextFunction) {
-    var idParam = req.body.id;
+  static deleteData(req:Request, res:Response, next:NextFunction):void {
+    console.log('delete')
+    var idParam = parseInt(req.body.id);
     Kontak.destroy({
       where: {
         id: idParam,

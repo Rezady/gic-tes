@@ -8,16 +8,13 @@ export default class User {
 
   getUser():any {
     const User = this.sequelize.define("user", {
-      nama: {
+      email: {
           type: this.Sequelize.STRING,
           unique: true,
         },
       password: {
           type: this.Sequelize.STRING,
         },
-      token: {
-          type: this.Sequelize.STRING,
-      },
       role:{
         type: this.Sequelize.STRING,
         validate: {
