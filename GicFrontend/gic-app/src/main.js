@@ -1,14 +1,35 @@
-import { createApp } from 'vue'
-import App from './App.vue'
-import './index.css'
-// import './components/modal/modal.css'
-import 'bootstrap'
-import 'bootstrap/dist/css/bootstrap.css';
+import { createApp } from "vue";
+import { createWebHistory, createRouter } from "vue-router";
+import App from "./App.vue";
+import "./index.css";
+import "bootstrap";
+import "bootstrap/dist/css/bootstrap.css";
 
-// import 'bootstrap/dist/js/bootstrap.bundle.min';
-// import 'bootstrap/dist/css/bootstrap.min.css'
+import Home from "./pages/Home.vue";
+import Signin from "./pages/Signin.vue";
+import Signup from "./pages/Signup.vue";
 
+const routes = [
+    {
+      path: "/",
+      name: "signin",
+      component: Signin,
+    },
+    {
+      path: "/signup",
+      name: "signup",
+      component: Signup,
+    },
+    {
+      path: "/home",
+      name: "home",
+      component: Home,
+    },
+  ];
+  
+ export const router = createRouter({
+    history: createWebHistory(),
+    routes,
+  });
 
-
-
-createApp(App).mount('#app')
+createApp(App).use(router).mount('#app')

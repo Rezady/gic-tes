@@ -19,31 +19,34 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 app.use((req, res, next) => {
-    // membolehkan semua link untuk diakses, parameter kedua itu link
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    // mengizinkan method get post dll untuk diakses di backend
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST,PUT,PATCH,DELETE,OPTIONS');
-    // mengizinkan headers yang boleh diakses
-    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    next();
+	// membolehkan semua link untuk diakses, parameter kedua itu link
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	// mengizinkan method get post dll untuk diakses di backend
+	res.setHeader(
+		"Access-Control-Allow-Methods",
+		"GET, POST,PUT,PATCH,DELETE,OPTIONS"
+	);
+	// mengizinkan headers yang boleh diakses
+	res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+	next();
 });
 app.use("/", indexRouter);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    next(createError(404));
+	next(createError(404));
 });
 // error handler
 app.use(function (err, req, res, next) {
-    // res.status(err.status || 500).json({
-    //   success: false,
-    //   message: "path tidak sesuai",
-    // });
+	// res.status(err.status || 500).json({
+	//   success: false,
+	//   message: "path tidak sesuai",
+	// });
 });
-db.kontak.belongsTo(db.user, { constraints: true, onDelete: 'CASCADE' });
+db.kontak.belongsTo(db.user, { constraints: true, onDelete: "CASCADE" });
 db.user.hasMany(db.kontak);
 // sinkronisasi perubahan skema database
 db.sequelize.sync();
 db.sequelize.sync({ force: false }).then(() => {
-    console.log("Drop and re-sync db.");
+	console.log("Drop and re-sync db.");
 });
 app.listen(3000);

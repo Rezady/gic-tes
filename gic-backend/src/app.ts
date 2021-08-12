@@ -4,7 +4,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 const db = require("./model");
 var bodyParser = require("body-parser");
-const Redis = require("ioredis")
+const Redis = require("ioredis");
 var indexRouter = require("./routes/index");
 import { Request, Response, NextFunction } from "express";
 
@@ -21,40 +21,41 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // parse application/json
 app.use(bodyParser.json());
 
-
 app.use((req: Request, res: Response, next: NextFunction) => {
-  // membolehkan semua link untuk diakses, parameter kedua itu link
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  // mengizinkan method get post dll untuk diakses di backend
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST,PUT,PATCH,DELETE,OPTIONS');
-  // mengizinkan headers yang boleh diakses
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-  
-})
+	// membolehkan semua link untuk diakses, parameter kedua itu link
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	// mengizinkan method get post dll untuk diakses di backend
+	res.setHeader(
+		"Access-Control-Allow-Methods",
+		"GET,POST,PUT,PATCH,DELETE,OPTIONS"
+	);
+	// mengizinkan headers yang boleh diakses
+	res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+	next();
+});
 
 app.use("/", indexRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req: Request, res: Response, next: NextFunction) {
-    next(createError(404));
-  });
-  
-// error handler
-app.use(function (err:Error, req: Request, res: Response, next: NextFunction) {
-  res.status(500).json({
-    success: false,
-    message: "path tidak sesuai",
-  });
+	next(createError(404));
 });
-  
-db.kontak.belongsTo(db.user, { constraints: true, onDelete: 'CASCADE' });
+
+// error handler
+app.use(function (err: Error, req: Request, res: Response, next: NextFunction) {
+	res.status(500).json({
+		success: false,
+		message: "path tidak sesuai",
+	});
+});
+
+db.kontak.belongsTo(db.user, { constraints: true, onDelete: "CASCADE" });
 db.user.hasMany(db.kontak);
 
 // sinkronisasi perubahan skema database
 db.sequelize.sync();
 db.sequelize.sync({ force: false }).then(() => {
-    console.log("Drop and re-sync db.");
+	console.log("Drop and re-sync db.");
 });
 
-app.listen(3000)
+app.listen(3000);
