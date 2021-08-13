@@ -1,4 +1,5 @@
 <template>
+
 	<div class="collapse navbar-collapse" id="navbarSupportedContent">
 		<ul class="navbar-nav mr-auto"></ul>
 		<form class="form-inline my-2 my-lg-0">
@@ -38,7 +39,9 @@
 
 <script>
 import { router } from "../../main";
-import { inject } from "vue";
+import { inject, onBeforeUnmount } from "vue";
+
+
 export default {
 	name: "RightNavbar",
 	setup() {
@@ -61,5 +64,13 @@ export default {
 			router.push({ name: "signin" });
 		},
 	},
+    mounted(){
+        this.setToken(localStorage.token)
+        this.setEmail(localStorage.email)
+    },
+    beforeUnmount(){
+        this.setToken(localStorage.token)
+        this.setEmail(localStorage.email)
+    }
 };
 </script>

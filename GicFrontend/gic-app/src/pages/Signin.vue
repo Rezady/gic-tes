@@ -44,7 +44,7 @@ export default {
 					email: this.email,
 					password: this.password,
 				});
-				localStorage.role = loginData.data.data.email;
+				localStorage.role = loginData.data.data.role;
 				localStorage.email = loginData.data.data.email;
 				localStorage.token = loginData.data.token;
 				// setEmail(localStorage.email)
@@ -56,6 +56,10 @@ export default {
 				console.log("err ", this.errorInput);
 			}
 		},
+	},
+	mounted() {
+		this.setEmail(localStorage.email);
+		this.setToken(localStorage.token);
 	},
 	beforeUnmount() {
 		this.setEmail(localStorage.email);

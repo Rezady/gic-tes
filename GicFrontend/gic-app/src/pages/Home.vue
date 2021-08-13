@@ -35,12 +35,28 @@ export default {
 		const operation = inject("operation");
 		const idxComp = inject("idxComp");
 		const updateShowModal = inject("updateShowModal");
+		const setEmail = inject("setEmail");
+		const setToken = inject("setToken");
+		const setRole = inject('setRole')
 		return {
 			showModal,
 			operation,
 			idxComp,
 			updateShowModal,
+			setEmail,
+			setToken,
+			setRole,
 		};
 	},
+	mounted() {
+		this.setEmail(localStorage.email);
+		this.setToken(localStorage.token);
+		this.setRole(localStorage.role);
+	},
+	beforeUnmount(){
+		this.setEmail(localStorage.email);
+		this.setToken(localStorage.token);
+		this.setRole(localStorage.role);
+	}
 };
 </script>
